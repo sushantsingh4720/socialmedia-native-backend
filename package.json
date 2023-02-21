@@ -10,11 +10,14 @@
   "author": "sush",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cloudinary": "^1.34.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-fileupload": "^1.4.0",
     "fs": "^0.0.1-security",
+    "joi": "^17.8.1",
     "mongoose": "^6.9.2"
   }
 }

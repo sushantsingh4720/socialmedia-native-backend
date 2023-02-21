@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { config } from "dotenv";
+import cloudinary from "cloudinary";
 import fileUpload from "express-fileupload";
 import dbConnect from "./config/dbConnect.js";
 import userRoute from "./routes/userRoute.js";
@@ -18,6 +19,13 @@ app.use(
     useTempFiles: true,
   })
 );
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+});
+
 app.get("/", (req, res) => {
   res.status(200).json({ success: true, message: "API is working" });
 });
