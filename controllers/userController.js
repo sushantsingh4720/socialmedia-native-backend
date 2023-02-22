@@ -5,6 +5,7 @@ import {
   signUpBodyValidation,
   loginBodyValidation,
 } from "../utils/validationSchema.js";
+import sendCookie from "../utils/sendCookie.js";
 
 // @route POST api/user/register
 // @desc  Register new user account
@@ -39,14 +40,14 @@ const Signup = async (req, res) => {
       fs.rmSync("./tmp", { recursive: true });
     }
     user = await User.create(user);
+    sendCookie(user, res);
     res.status(201).json({
       success: true,
       user,
       message: "User successfully registered",
-      token: user.getJWTToken(),
     });
   } catch (error) {
-    res.status(500).json({ error: true, message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -74,16 +75,42 @@ const Login = async (req, res) => {
         .status(401)
         .json({ error: true, message: "Invalid email or password" });
     user = await User.findOne({ email: req.body.email });
+    sendCookie(user, res);
     res.status(200).json({
       success: true,
       user,
       message: "login successfull",
-      token: user.getJWTToken(),
     });
   } catch (error) {
-    res.status(500).json({ error: true, message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
-export { Signup, Login };
-console.log();
+// @route POST api/user/logout
+// @desc  logout
+// @access login user access
+const Logout = async (req, res) => {
+  try {
+    res
+      .status(200)
+      .cookie("token", null, {
+        expires: new Date(Date.now()),
+      })
+      .json({ success: true, message: "Logged out successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @route get api/user/me
+// @desc  get profile
+// @access only authenticated user access this route
+const Profile = async (req, res) => {
+  try {
+    res.status(200).json({ success: true, user: req.user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export { Signup, Login, Logout, Profile };

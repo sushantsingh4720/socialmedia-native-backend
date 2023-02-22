@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { config } from "dotenv";
+import cookieParser from "cookie-parser";
 import cloudinary from "cloudinary";
 import fileUpload from "express-fileupload";
 import dbConnect from "./config/dbConnect.js";
@@ -13,6 +14,7 @@ dbConnect();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(
   fileUpload({
     limits: { fileSize: 50 * 1024 * 1024 },
