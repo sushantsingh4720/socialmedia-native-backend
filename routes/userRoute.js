@@ -1,14 +1,23 @@
 import { Router } from "express";
 const router = Router();
 import {
-  Login,
+  followUser,
+  getAllFollowers,
+  getAllFollowing,
+  getUserDetails,
   Logout,
   Profile,
-  Signup,
+  searchUser,
+  unFollowUser,
 } from "../controllers/userController.js";
-import authMiddleware from "../middleware/authMiddleware.js";
-router.route("/user/register").post(Signup);
-router.route("/user/login").post(Login);
-router.route("/user/logout").post(Logout);
-router.route("/user/me").get(authMiddleware, Profile);
+
+router.route("/user/logout").get(Logout);
+router.route("/user/me").get(Profile);
+router.route("/user/follow/:id").post(followUser);
+router.route("/user/unfollow/:id").put(unFollowUser);
+router.route("/user/allFollowing").get(getAllFollowing);
+router.route("/user/allFollowers").get(getAllFollowers);
+router.route("/user/details/:id").get(getUserDetails);
+router.route("/user/search").get(searchUser);
+
 export default router;

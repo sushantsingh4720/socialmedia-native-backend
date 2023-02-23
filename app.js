@@ -6,6 +6,8 @@ import cloudinary from "cloudinary";
 import fileUpload from "express-fileupload";
 import dbConnect from "./config/dbConnect.js";
 import userRoute from "./routes/userRoute.js";
+import authRoute from "./routes/authRoute.js";
+import authMiddleware from "./middleware/authMiddleware.js";
 const app = express();
 
 config();
@@ -31,7 +33,8 @@ cloudinary.config({
 app.get("/", (req, res) => {
   res.status(200).json({ success: true, message: "API is working" });
 });
-
+app.use("/api/v1/auth", authRoute);
+app.use(authMiddleware);
 app.use("/api/v1", userRoute);
 
 const port = process.env.PORT;

@@ -25,6 +25,22 @@ const userSchema = mongoose.Schema(
       public_id: String,
       url: String,
     },
+    Followers: [
+      {
+        id: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
+    Following: [
+      {
+        id: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     resetPasswordToken: {
       type: String,
     },
