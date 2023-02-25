@@ -6,6 +6,7 @@ import {
   loginBodyValidation,
 } from "../utils/validationSchema.js";
 import sendCookie from "../utils/sendCookie.js";
+import { getAllFollowers, getAllFollowing } from "../utils/apiFeatures.js";
 
 // @route POST api/v1/user/register
 // @desc  Register new user account
@@ -190,53 +191,14 @@ const unFollowUser = async (req, res) => {
   }
 };
 
-// @route get api/v1/user/allFollowing
-// @desc   get all user to follow
+// @route get api/v1/user/allFollowFollowers
+// @desc   get all user to follow and followers
 // @access only authenticated user access this route
-const getAllFollowing = async (req, res) => {
+const getFollowFollowers = async (req, res) => {
   try {
-    let allUsers = await User.find();
-    const { Following } = await User.findById(req.user._id);
-
-    let allFollowing = allUsers.filter((value) => {
-      return Following.find((item) => {
-        return value._id.toString() === item.id;
-      });
-    });
-    allFollowing = allFollowing.map((value) => {
-      return {
-        _id: value._id,
-        name: value.name,
-        avatar: value.avatar,
-        email: value.email,
-      };
-    });
-    res.status(200).json({ success: true, allFollowing });
-  } catch (error) {
-    res.status(500).json({ error: true, message: "Internal Server Error" });
-  }
-};
-
-// @route get api/v1/user/allFollowers
-// @desc   get all followers
-// @access only authenticated user access this route
-const getAllFollowers = async (req, res) => {
-  try {
-    let allUsers = await User.find();
-    const { Followers } = await User.findById(req.user._id);
-    let allFollowers = allUsers.filter((value) => {
-      return Followers.find((item) => {
-        return value._id.toString() === item.id;
-      });
-    });
-    allFollowers = allFollowers.map((item) => {
-      return {
-        _id: item._id,
-        email: item.email,
-        avatar: item.avatar,
-      };
-    });
-    res.status(200).json({ success: true, allFollowers });
+    const allFollowers = await getAllFollowers({ req, res, _id: req.user._id });
+    const allFollowing = await getAllFollowing({ req, res, _id: req.user._id });
+    res.status(200).json({ success: true, allFollowers, allFollowing });
   } catch (error) {
     res.status(500).json({ error: true, message: "Internal Server Error" });
   }
@@ -280,8 +242,7 @@ export {
   Profile,
   followUser,
   unFollowUser,
-  getAllFollowing,
-  getAllFollowers,
   getUserDetails,
   searchUser,
+  getFollowFollowers,
 };
