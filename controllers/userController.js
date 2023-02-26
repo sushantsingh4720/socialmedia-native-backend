@@ -118,6 +118,7 @@ const Profile = async (req, res) => {
 // @desc  follow a user
 // @access only authenticated user access this route
 const followUser = async (req, res) => {
+  console.log(req.params.id, req.user._id);
   try {
     if (req.params.id === req.user._id)
       return res
@@ -130,8 +131,8 @@ const followUser = async (req, res) => {
         .status(400)
         .json({ error: true, message: "Please provide a valid id" });
 
-    const isFollowing = otheruser.Followers.some((follower) => {
-      return follower.id.toString() === user._id.toString();
+    const isFollowing = user.Following.some((following) => {
+      return following.id.toString() === req.params.id.toString();
     });
 
     if (isFollowing) {
@@ -168,8 +169,8 @@ const unFollowUser = async (req, res) => {
       return res
         .status(400)
         .json({ error: true, message: "Please provide a valid id" });
-    const isFollowing = otheruser.Followers.some((follower) => {
-      return follower.id.toString() === user._id.toString();
+    const isFollowing = user.Following.some((following) => {
+      return following.id.toString() === req.params.id.toString();
     });
 
     if (!isFollowing) {
@@ -192,7 +193,7 @@ const unFollowUser = async (req, res) => {
 };
 
 // @route get api/v1/user/allFollowFollowers
-// @desc   get all user to follow and followers
+// @desc   get all follow and followers
 // @access only authenticated user access this route
 const getFollowFollowers = async (req, res) => {
   try {
@@ -235,6 +236,31 @@ const searchUser = async (req, res) => {
     res.status(500).json({ error: true, message: "Internal Server Error" });
   }
 };
+// @route post api/v1/user/removefollower/:id
+// @desc   remove a user from the followers list
+// @access only authenticated user access this route
+const removeFollower = async (req, res) => {
+  try {
+    let user = await User.findById(req.user._id);
+    const isAlreadyRemove = user.Followers.some((follower) => {
+      return follower.id.toString() === req.params.id.toString();
+    });
+    if (!isAlreadyRemove)
+      return res
+        .status(400)
+        .json({ error: true, message: "User already removed" });
+    let Followers = await user.Followers.filter((follower) => {
+      return follower.id !== req.params.id;
+    });
+    user.Followers = Followers;
+    user.save();
+    res.status(200).json({ success: true, message: "Successfully remove" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: true, message: "Internal Server Error" });
+  }
+};
+
 export {
   Signup,
   Login,
@@ -245,4 +271,5 @@ export {
   getUserDetails,
   searchUser,
   getFollowFollowers,
+  removeFollower,
 };
