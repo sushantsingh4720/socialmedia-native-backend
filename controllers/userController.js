@@ -8,6 +8,18 @@ import {
 import sendCookie from "../utils/sendCookie.js";
 import { getAllFollowers, getAllFollowing } from "../utils/apiFeatures.js";
 
+// @route get api/v1/user
+// @desc  get all users
+// @access authenticated
+const getAllUser = async (req, res) => {
+  try {
+    const user = await User.find();
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ error: true, message: error.message });
+  }
+};
+
 // @route POST api/v1/user/register
 // @desc  Register new user account
 // @access Public
@@ -118,7 +130,6 @@ const Profile = async (req, res) => {
 // @desc  follow a user
 // @access only authenticated user access this route
 const followUser = async (req, res) => {
-  console.log(req.params.id, req.user._id);
   try {
     if (req.params.id === req.user._id)
       return res
@@ -241,7 +252,13 @@ const searchUser = async (req, res) => {
 // @access only authenticated user access this route
 const removeFollower = async (req, res) => {
   try {
+    if (req.params.id === req.user._id)
+      return res.status(400).json({
+        error: true,
+        message: "you can't remove yourself form yourself followerslist",
+      });
     let user = await User.findById(req.user._id);
+    let otherUser = await User.findById(req.params.id);
     const isAlreadyRemove = user.Followers.some((follower) => {
       return follower.id.toString() === req.params.id.toString();
     });
@@ -250,13 +267,19 @@ const removeFollower = async (req, res) => {
         .status(400)
         .json({ error: true, message: "User already removed" });
     let Followers = await user.Followers.filter((follower) => {
-      return follower.id !== req.params.id;
+      return follower.id.toString() !== req.params.id.toString();
+    });
+
+    let Following = await otherUser.Following.filter((following) => {
+      return following.id.toString() !== req.user._id.toString();
     });
     user.Followers = Followers;
-    user.save();
+    await user.save();
+    otherUser.Following = Following;
+    await otherUser.save();
+
     res.status(200).json({ success: true, message: "Successfully remove" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: true, message: "Internal Server Error" });
   }
 };
@@ -272,4 +295,5 @@ export {
   searchUser,
   getFollowFollowers,
   removeFollower,
+  getAllUser,
 };

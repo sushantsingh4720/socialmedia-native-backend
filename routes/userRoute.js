@@ -2,6 +2,7 @@ import { Router } from "express";
 const router = Router();
 import {
   followUser,
+  getAllUser,
   getFollowFollowers,
   getUserDetails,
   Logout,
@@ -10,7 +11,7 @@ import {
   searchUser,
   unFollowUser,
 } from "../controllers/userController.js";
-
+router.route("/user").get(getAllUser);
 router.route("/user/logout").get(Logout);
 router.route("/user/me").get(Profile);
 router.route("/user/follow/:id").post(followUser);
