@@ -2,11 +2,12 @@ import express from "express";
 import cors from "cors";
 import { config } from "dotenv";
 import cookieParser from "cookie-parser";
-import cloudinary from "cloudinary";
 import fileUpload from "express-fileupload";
+import cloudinary from "cloudinary";
 import dbConnect from "./config/dbConnect.js";
 import userRoute from "./routes/userRoute.js";
 import authRoute from "./routes/authRoute.js";
+import postRoute from "./routes/postRoute.js";
 import authMiddleware from "./middleware/authMiddleware.js";
 const app = express();
 
@@ -35,7 +36,8 @@ app.get("/", (req, res) => {
 });
 app.use("/api/v1/auth", authRoute);
 app.use(authMiddleware);
-app.use("/api/v1", userRoute);
+app.use("/api/v1/user", userRoute);
+app.use("/api/v1/post", postRoute);
 
 const port = process.env.PORT;
 app.listen(5000, (req, res) => {

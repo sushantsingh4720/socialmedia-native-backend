@@ -41,6 +41,19 @@ const userSchema = mongoose.Schema(
         },
       },
     ],
+    Notification: [
+      {
+        _id: { type: String, required: true },
+        message: {
+          type: String,
+        },
+        seen: {
+          type: Boolean,
+          default: false,
+        },
+      },
+      { timestamps: true },
+    ],
     resetPasswordToken: {
       type: String,
     },
