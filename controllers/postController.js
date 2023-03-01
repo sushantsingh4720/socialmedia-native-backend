@@ -8,8 +8,19 @@ import fs from "fs";
 // @access authenticated
 const getAllPost = async (req, res) => {
   try {
-    const posts = await Post.find();
-    res.status(200).json({ success: true, posts });
+    let allPosts = await Post.find().sort({ createdAt: -1 });
+    const user = await User.findById(req.user._id);
+    allPosts = allPosts.filter((post) => {
+      return user.Following.some((item) => {
+        {
+          return (
+            item.id.toString() === post.user.toString() ||
+            req.user._id.toString() === post.user.toString()
+          );
+        }
+      });
+    });
+    res.status(200).json({ success: true, allPosts });
   } catch (error) {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
