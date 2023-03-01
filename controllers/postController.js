@@ -36,14 +36,23 @@ const uploadPost = async (req, res) => {
       user: req.user._id,
       image: { public_id: mycloud.public_id, url: mycloud.url },
     };
-    post = await Post.create(post);
+    await Post.create(post);
 
-    res
-      .status(201)
-      .json({ success: true, message: "successfully uploaded", post });
+    res.status(201).json({ success: true, message: "successfully uploaded" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+// @route post api/v1/post/me
+// @desc  get all post uploaded by me
+// @access authenticated
+const getMyPost = async (req, res) => {
+  try {
+    const myPost = await Post.find({ user: req.user._id });
+    res.status(200).json({ success: true, myPost });
   } catch (error) {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
-export { uploadPost, getAllPost };
+export { uploadPost, getAllPost, getMyPost };
