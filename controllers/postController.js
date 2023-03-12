@@ -59,7 +59,9 @@ const uploadPost = async (req, res) => {
 // @access authenticated
 const getMyPost = async (req, res) => {
   try {
-    const myPost = await Post.find({ user: req.user._id });
+    const myPost = await Post.find({ user: req.user._id }).sort({
+      createdAt: -1,
+    });
     res.status(200).json({ success: true, myPost });
   } catch (error) {
     res.status(500).json({ success: false, message: "Internal Server Error" });
